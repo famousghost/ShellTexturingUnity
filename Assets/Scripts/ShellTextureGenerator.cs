@@ -57,6 +57,11 @@ namespace McShaders
             UpdateLayersMaterials();
             _CurrentLayerSize = _LayersSize;
         }
+
+        private void OnDisable()
+        {
+            CleanGrassLayers(_LayersSize);
+        }
         #endregion Unity Methods
 
         #region Private Methods
@@ -90,15 +95,16 @@ namespace McShaders
 
         private void UpdateMaterial(GameObject layer, float layerHeight, float heightStepSize)
         {
-            layer.GetComponent<MeshRenderer>().material = new Material(_ShellTextureMaterial);
-            var material = layer.GetComponent<MeshRenderer>().material;
-            material.SetFloat(_ResolutionId, _Resolution * _FieldSize);
-            material.SetFloat(_LayerHeightId, layerHeight);
-            material.SetFloat(_RadiusId, _Radius);
-            material.SetFloat(_FrequencyId, _Frequency);
-            material.SetFloat(_HeightStepSizeId, heightStepSize);
-            material.SetColor(_GrassColorId, _GrassColor);
-            material.SetFloat(_FieldSizeId, _FieldSize);
+            _ShellTexturingMaterialPropertyBlock = new MaterialPropertyBlock();
+
+            _ShellTexturingMaterialPropertyBlock.SetFloat(_ResolutionId, _Resolution * _FieldSize);
+            _ShellTexturingMaterialPropertyBlock.SetFloat(_LayerHeightId, layerHeight);
+            _ShellTexturingMaterialPropertyBlock.SetFloat(_RadiusId, _Radius);
+            _ShellTexturingMaterialPropertyBlock.SetFloat(_FrequencyId, _Frequency);
+            _ShellTexturingMaterialPropertyBlock.SetFloat(_HeightStepSizeId, heightStepSize);
+            _ShellTexturingMaterialPropertyBlock.SetColor(_GrassColorId, _GrassColor);
+            _ShellTexturingMaterialPropertyBlock.SetFloat(_FieldSizeId, _FieldSize);
+            layer.GetComponent<MeshRenderer>().SetPropertyBlock(_ShellTexturingMaterialPropertyBlock);
         }
 
         private bool CheckIfShouldRecalculateMesh()
@@ -117,6 +123,7 @@ namespace McShaders
 
         #region Private Variables
         private int _CurrentLayerSize;
+        private MaterialPropertyBlock _ShellTexturingMaterialPropertyBlock;
 
         private static readonly int _ResolutionId = Shader.PropertyToID("_Resolution");
         private static readonly int _LayerHeightId = Shader.PropertyToID("_LayerHeight");

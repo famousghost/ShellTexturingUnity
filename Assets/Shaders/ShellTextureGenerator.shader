@@ -85,7 +85,7 @@ Shader "McShaders/ShellTextureGenerator"
                 if (result >= _LayerHeight)
                 {
                     float addedValue = lerp(0.0f, 1.0f - _Radius, _HeightStepSize);
-                    float val = lerp(1.0f, 0.0f, length(fuv - 0.5f + (random(iuv) * 0.5f)) + _Radius + addedValue);
+                    float val = lerp(1.0f, 0.0f, length(fuv - (0.5f + (random(iuv) * 0.5f))) + _Radius + addedValue);
                     result *= val;
                     col = _GrassColor * addedValue;
                 }

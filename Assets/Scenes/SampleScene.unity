@@ -147,7 +147,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 567200923}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.2, y: 0, z: -11.5}
+  m_LocalPosition: {x: -0, y: -0.57, z: -8.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -365,9 +365,9 @@ MonoBehaviour:
   _FurryObject: {fileID: 567200923}
   _PlanePrefab: {fileID: 7831256981686094368, guid: 3f950da7952b8cb4b9c3eb3e1551739f, type: 3}
   _LayersObjects: []
-  _LayersSize: 16
-  _Resolution: 128
-  _LayersSpan: 0.005
+  _LayersSize: 32
+  _Resolution: 256
+  _LayersSpan: 0.003
   _FieldSize: 1
   _Radius: 0.1
   _Frequency: 256
