@@ -16,6 +16,7 @@ Shader "McShaders/ShellTextureGenerator"
             struct appdata
             {
                 float4 vertex : POSITION;
+                float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
             };
 
@@ -27,7 +28,7 @@ Shader "McShaders/ShellTextureGenerator"
 
             float random(in float2 p)
             {
-                return frac(sin(dot(p, float2(19.5423f, 33.32353))) * 7567.4534f) * 2.0f - 1.0f;
+                return frac(sin(dot(p, float2(19.5423f, 33.32353))) * 7567.4534f);
             }
 
             float sampleSeamlessNoise(in float2 p, in float freq)
@@ -57,20 +58,22 @@ Shader "McShaders/ShellTextureGenerator"
             sampler2D _MainTex;
             float4 _MainTex_ST;
 
-            v2f vert(appdata v)
-            {
-                v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
-                return o;
-            }
-
             float _Resolution;
             float _Frequency;
             float _LayerHeight;
             float _Radius;
             float _HeightStepSize;
             float4 _GrassColor;
+
+            v2f vert(appdata v)
+            {
+                v2f o;
+                v.vertex.xyz += v.normal * _LayerHeight;
+                o.vertex = UnityObjectToClipPos(v.vertex);
+
+                o.uv = v.uv;
+                return o;
+            }
 
             float4 frag(v2f i) : SV_Target
             {
@@ -82,7 +85,7 @@ Shader "McShaders/ShellTextureGenerator"
                 if (result >= _LayerHeight)
                 {
                     float addedValue = lerp(0.0f, 1.0f - _Radius, _HeightStepSize);
-                    float val = lerp(1.0f, 0.0f, length(fuv - 0.5f) + _Radius + addedValue);
+                    float val = lerp(1.0f, 0.0f, length(fuv - 0.5f + (random(iuv) * 0.5f)) + _Radius + addedValue);
                     result *= val;
                     col = _GrassColor * addedValue;
                 }

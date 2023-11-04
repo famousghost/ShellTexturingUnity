@@ -4,6 +4,7 @@ namespace McShaders
     using System.Collections.Generic;
     using UnityEditor.Experimental.GraphView;
     using UnityEngine;
+    using static UnityEditor.Experimental.GraphView.GraphView;
 
     public sealed class ShellTextureGenerator : MonoBehaviour
     {
@@ -31,13 +32,18 @@ namespace McShaders
         private void Start()
         {
             _CurrentLayerSize = _LayersSize;
-            _CurrentLayerSpan = _LayersSpan;
-            _CurrentResolution = _Resolution;
-            _CurrentFieldSize = _FieldSize;
-            _CurrentFrequency = _Frequency;
-            _CurrentRadius = _Radius;
             CleanGrassLayers(_LayersSize);
             SpawnGrassLayers(_LayersSize);
+            UpdateLayersMaterials();
+        }
+
+        private void OnValidate()
+        {
+            if (_LayersObjects == null || _LayersObjects.Count == 0)
+            {
+                return;
+            }
+            UpdateLayersMaterials();
         }
 
         private void Update()
@@ -48,12 +54,8 @@ namespace McShaders
             }
             CleanGrassLayers(_CurrentLayerSize);
             SpawnGrassLayers(_LayersSize);
+            UpdateLayersMaterials();
             _CurrentLayerSize = _LayersSize;
-            _CurrentLayerSpan = _LayersSpan;
-            _CurrentResolution = _Resolution;
-            _CurrentFieldSize = _FieldSize;
-            _CurrentFrequency = _Frequency;
-            _CurrentRadius = _Radius;
         }
         #endregion Unity Methods
 
@@ -68,9 +70,6 @@ namespace McShaders
             for (int i = 0; i < layerSize; ++i)
             {
                 var layer = Instantiate(_PlanePrefab, _FurryObject.transform);
-                layer.transform.position += (Vector3.up * i * _LayersSpan);
-                layer.transform.localScale = new Vector3(1.0f * _FieldSize, 1.0f * _FieldSize, 1.0f);
-                UpdateMaterial(layer, _LayersSpan * i, (float)i / layerSize);
                 _LayersObjects.Add(layer);
             }
         }
@@ -99,28 +98,25 @@ namespace McShaders
             material.SetFloat(_FrequencyId, _Frequency);
             material.SetFloat(_HeightStepSizeId, heightStepSize);
             material.SetColor(_GrassColorId, _GrassColor);
+            material.SetFloat(_FieldSizeId, _FieldSize);
         }
 
         private bool CheckIfShouldRecalculateMesh()
         {
-            return _LayersSize == _CurrentLayerSize
-                   && _LayersSpan == _CurrentLayerSpan
-                   && _Resolution == _CurrentResolution
-                   && _FieldSize == _CurrentFieldSize
-                   && _Radius == _CurrentRadius
-                   && _Frequency == _CurrentFrequency
-                   && _GrassColor == _CurrentGrassColor;
+            return _LayersSize == _CurrentLayerSize;
+        }
+
+        private void UpdateLayersMaterials()
+        {
+            for (int i = 0; i < _LayersObjects.Count; ++i)
+            {
+                UpdateMaterial(_LayersObjects[i], _LayersSpan * i, (float)i / _LayersSize);
+            }
         }
         #endregion Private Methods
 
         #region Private Variables
         private int _CurrentLayerSize;
-        private float _CurrentLayerSpan;
-        private float _CurrentResolution;
-        private float _CurrentFieldSize;
-        private float _CurrentRadius;
-        private float _CurrentFrequency;
-        private Color _CurrentGrassColor;
 
         private static readonly int _ResolutionId = Shader.PropertyToID("_Resolution");
         private static readonly int _LayerHeightId = Shader.PropertyToID("_LayerHeight");
@@ -128,6 +124,7 @@ namespace McShaders
         private static readonly int _FrequencyId = Shader.PropertyToID("_Frequency");
         private static readonly int _HeightStepSizeId = Shader.PropertyToID("_HeightStepSize");
         private static readonly int _GrassColorId = Shader.PropertyToID("_GrassColor");
+        private static readonly int _FieldSizeId = Shader.PropertyToID("_FieldSize");
         #endregion Private Variables
     }
 }

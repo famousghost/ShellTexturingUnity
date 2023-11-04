@@ -363,7 +363,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ShellTextureMaterial: {fileID: 2100000, guid: 5cd93a60ee3b0214d82c022331912812, type: 2}
   _FurryObject: {fileID: 567200923}
-  _PlanePrefab: {fileID: 717870161686164453, guid: ac0784bf0707f4447bf0e049315fae82, type: 3}
+  _PlanePrefab: {fileID: 7831256981686094368, guid: 3f950da7952b8cb4b9c3eb3e1551739f, type: 3}
   _LayersObjects: []
   _LayersSize: 16
   _Resolution: 128
@@ -371,7 +371,6 @@ MonoBehaviour:
   _FieldSize: 1
   _Radius: 0.1
   _Frequency: 256
-  _HeightStepSize: 0
   _GrassColor: {r: 0.26666668, g: 0.48235294, b: 0, a: 0}
 --- !u!4 &1748050116
 Transform:
