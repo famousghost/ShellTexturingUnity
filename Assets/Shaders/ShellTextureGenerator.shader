@@ -65,17 +65,27 @@ Shader "McShaders/ShellTextureGenerator"
             float _HeightStepSize;
             float4 _GrassColor;
             float _DisplacementStrength;
-
-            float3 rotateY(float angle)
-            {
-                return float3(cos(angle) + sin(angle), 1.0f, -sin(angle) + cos(angle));
-            }
+            float3 _FieldSize;
+            int _ObjectType;
 
             v2f vert(appdata v)
             {
                 v2f o;
+                v.vertex.xyz *= _FieldSize;
                 v.vertex.xyz += v.normal * _LayerHeight;
-                v.vertex.xyz += float3(0.0f, -1.0f, 0.0f) * _DisplacementStrength;
+                float2 uv = (v.uv * 2.0f - 1.0f) * _Resolution;
+                float2 iuv = floor(uv);
+                if (_ObjectType == 1)
+                {
+                    const float3 dir = normalize(float3(0.5f, 0.5f, 0.0f) - float3(v.uv.x, v.uv.y, 0.0f));
+                    v.vertex.xyz += dir * _DisplacementStrength;
+                }
+                else if (_ObjectType == 2)
+                {
+                    const float3 dir = float3(0.0f, 1.0f, 0.0f);
+                    v.vertex.xyz += dir * _DisplacementStrength;
+                }
+
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
                 o.uv = v.uv;
@@ -84,16 +94,16 @@ Shader "McShaders/ShellTextureGenerator"
 
             float4 frag(v2f i) : SV_Target
             {
-                float2 uv = i.uv * _Resolution;
-                float2 fuv = frac(uv);
-                float2 iuv = floor(uv);
+                const float2 uv = i.uv * _Resolution;
+                const float2 fuv = frac(uv);
+                const float2 iuv = floor(uv);
                 float result = noise(uv, _Frequency);
                 float4 col = _GrassColor;
-                if (result >= _LayerHeight)
+                if (result > _LayerHeight)
                 {
-                    float addedValue = lerp(0.0f, 1.0f - _Radius, _HeightStepSize);
-                    float val = lerp(1.0f, 0.0f, length(fuv - (0.5f + (random(iuv) * 0.5f))) + _Radius + addedValue);
-                    result *= val;
+                    const float addedValue = lerp(0.0f, 1.0f - _Radius, _HeightStepSize);
+                    const float rnd = random(iuv);
+                    result *= lerp(1.0f, 0.0f, length(fuv - float2(cos(rnd * 2.0f * UNITY_PI), sin(rnd * 2.0f * UNITY_PI))) + _Radius + addedValue);
                     col = _GrassColor * addedValue;
                 }
                 else
@@ -101,7 +111,7 @@ Shader "McShaders/ShellTextureGenerator"
                     discard;
                 }
 
-                if (result <= 0.0f)
+                if (result < 0.0f)
                 {
                     discard;
                 }
