@@ -1,3 +1,5 @@
+// Upgrade NOTE: replaced 'UNITY_INSTANCE_ID' with 'UNITY_VERTEX_INPUT_INSTANCE_ID'
+
 Shader "McShaders/ShellTextureGenerator"
 {
     SubShader
@@ -10,6 +12,7 @@ Shader "McShaders/ShellTextureGenerator"
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
 
             #include "UnityCG.cginc"
 
@@ -18,12 +21,14 @@ Shader "McShaders/ShellTextureGenerator"
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             float random(in float2 p)
@@ -55,35 +60,38 @@ Shader "McShaders/ShellTextureGenerator"
                 return abcd;
             }
 
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
-
-            float _Resolution;
-            float _Frequency;
-            float _LayerHeight;
-            float _Radius;
-            float _HeightStepSize;
-            float4 _GrassColor;
-            float _DisplacementStrength;
-            float3 _FieldSize;
-            int _ObjectType;
+            UNITY_INSTANCING_BUFFER_START(Props)
+                UNITY_DEFINE_INSTANCED_PROP(float, _Resolution)
+                UNITY_DEFINE_INSTANCED_PROP(float, _Frequency)
+                UNITY_DEFINE_INSTANCED_PROP(float, _LayerHeight)
+                UNITY_DEFINE_INSTANCED_PROP(float, _Radius)
+                UNITY_DEFINE_INSTANCED_PROP(float, _HeightStepSize)
+                UNITY_DEFINE_INSTANCED_PROP(float4, _GrassColor)
+                UNITY_DEFINE_INSTANCED_PROP(float, _DisplacementStrength)
+                UNITY_DEFINE_INSTANCED_PROP(float3, _FieldSize)
+                UNITY_DEFINE_INSTANCED_PROP(int, _ObjectType)
+            UNITY_INSTANCING_BUFFER_END(Props)
 
             v2f vert(appdata v)
             {
                 v2f o;
-                v.vertex.xyz *= _FieldSize;
-                v.vertex.xyz += v.normal * _LayerHeight;
-                float2 uv = (v.uv * 2.0f - 1.0f) * _Resolution;
-                float2 iuv = floor(uv);
-                if (_ObjectType == 1)
+                UNITY_SETUP_INSTANCE_ID(v);
+                UNITY_TRANSFER_INSTANCE_ID(v, o);
+                v.vertex.xyz *= UNITY_ACCESS_INSTANCED_PROP(Props, _FieldSize);
+                v.vertex.xyz += v.normal * UNITY_ACCESS_INSTANCED_PROP(Props, _LayerHeight);
+                const float2 uv = (v.uv * 2.0f - 1.0f) * UNITY_ACCESS_INSTANCED_PROP(Props, _Resolution);
+                const float2 iuv = floor(uv);
+                const float displacementStrength = UNITY_ACCESS_INSTANCED_PROP(Props, _DisplacementStrength);
+                const int objectType = UNITY_ACCESS_INSTANCED_PROP(Props, _ObjectType);
+                if (objectType == 1)
                 {
                     const float3 dir = normalize(float3(0.5f, 0.5f, 0.0f) - float3(v.uv.x, v.uv.y, 0.0f));
-                    v.vertex.xyz += dir * _DisplacementStrength;
+                    v.vertex.xyz += dir * displacementStrength;
                 }
-                else if (_ObjectType == 2)
+                else if (objectType == 2)
                 {
                     const float3 dir = float3(0.0f, 1.0f, 0.0f);
-                    v.vertex.xyz += dir * _DisplacementStrength;
+                    v.vertex.xyz += dir * displacementStrength;
                 }
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
@@ -94,17 +102,19 @@ Shader "McShaders/ShellTextureGenerator"
 
             float4 frag(v2f i) : SV_Target
             {
-                const float2 uv = i.uv * _Resolution;
+                UNITY_SETUP_INSTANCE_ID(i);
+                const float2 uv = i.uv * UNITY_ACCESS_INSTANCED_PROP(Props, _Resolution);
                 const float2 fuv = frac(uv);
                 const float2 iuv = floor(uv);
-                float result = noise(uv, _Frequency);
-                float4 col = _GrassColor;
-                if (result > _LayerHeight)
+                float result = noise(uv, UNITY_ACCESS_INSTANCED_PROP(Props, _Frequency));
+                float4 col = UNITY_ACCESS_INSTANCED_PROP(Props, _GrassColor);
+                if (result > UNITY_ACCESS_INSTANCED_PROP(Props, _LayerHeight))
                 {
-                    const float addedValue = lerp(0.0f, 1.0f - _Radius, _HeightStepSize);
+                    const float radius = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius);
+                    const float addedValue = lerp(0.0f, 1.0f - radius, UNITY_ACCESS_INSTANCED_PROP(Props, _HeightStepSize));
                     const float rnd = random(iuv);
-                    result *= lerp(1.0f, 0.0f, length(fuv - float2(cos(rnd * 2.0f * UNITY_PI), sin(rnd * 2.0f * UNITY_PI))) + _Radius + addedValue);
-                    col = _GrassColor * addedValue;
+                    result *= lerp(1.0f, 0.0f, length(fuv - float2(cos(rnd * 2.0f * UNITY_PI), sin(rnd * 2.0f * UNITY_PI))) + radius + addedValue);
+                    col *= addedValue;
                 }
                 else
                 {
