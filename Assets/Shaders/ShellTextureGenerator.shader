@@ -64,11 +64,18 @@ Shader "McShaders/ShellTextureGenerator"
             float _Radius;
             float _HeightStepSize;
             float4 _GrassColor;
+            float _DisplacementStrength;
+
+            float3 rotateY(float angle)
+            {
+                return float3(cos(angle) + sin(angle), 1.0f, -sin(angle) + cos(angle));
+            }
 
             v2f vert(appdata v)
             {
                 v2f o;
                 v.vertex.xyz += v.normal * _LayerHeight;
+                v.vertex.xyz += float3(0.0f, -1.0f, 0.0f) * _DisplacementStrength;
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
                 o.uv = v.uv;

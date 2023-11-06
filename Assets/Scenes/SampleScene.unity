@@ -366,11 +366,12 @@ MonoBehaviour:
   _PlanePrefab: {fileID: 7831256981686094368, guid: 3f950da7952b8cb4b9c3eb3e1551739f, type: 3}
   _LayersObjects: []
   _LayersSize: 32
-  _Resolution: 256
-  _LayersSpan: 0.003
+  _Resolution: 128
+  _LayersSpan: 0.005
   _FieldSize: 1
   _Radius: 0.1
-  _Frequency: 256
+  _Frequency: 15
+  _DisplacementStrength: 0.05
   _GrassColor: {r: 0.26666668, g: 0.48235294, b: 0, a: 0}
 --- !u!4 &1748050116
 Transform:

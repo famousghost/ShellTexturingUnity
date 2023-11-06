@@ -24,6 +24,7 @@ namespace McShaders
         [SerializeField] private float _FieldSize;
         [SerializeField] private float _Radius;
         [SerializeField] private float _Frequency;
+        [SerializeField] private float _DisplacementStrength;
         [SerializeField] private Color _GrassColor;
         #endregion Inspector Variables
 
@@ -104,6 +105,7 @@ namespace McShaders
             _ShellTexturingMaterialPropertyBlock.SetFloat(_HeightStepSizeId, heightStepSize);
             _ShellTexturingMaterialPropertyBlock.SetColor(_GrassColorId, _GrassColor);
             _ShellTexturingMaterialPropertyBlock.SetFloat(_FieldSizeId, _FieldSize);
+            _ShellTexturingMaterialPropertyBlock.SetFloat(_DisplacementStrengthId, _DisplacementStrength * Cubic(heightStepSize));
             layer.GetComponent<MeshRenderer>().SetPropertyBlock(_ShellTexturingMaterialPropertyBlock);
         }
 
@@ -114,10 +116,19 @@ namespace McShaders
 
         private void UpdateLayersMaterials()
         {
-            for (int i = 0; i < _LayersObjects.Count; ++i)
+            if (_LayersObjects == null || _LayersObjects.Count == 0)
+            {
+                return;
+            }
+            for (int i = 0; i < _LayersSize; ++i)
             {
                 UpdateMaterial(_LayersObjects[i], _LayersSpan * i, (float)i / _LayersSize);
             }
+        }
+
+        private float Cubic(float value)
+        {
+            return value * value * value;
         }
         #endregion Private Methods
 
@@ -132,6 +143,7 @@ namespace McShaders
         private static readonly int _HeightStepSizeId = Shader.PropertyToID("_HeightStepSize");
         private static readonly int _GrassColorId = Shader.PropertyToID("_GrassColor");
         private static readonly int _FieldSizeId = Shader.PropertyToID("_FieldSize");
+        private static readonly int _DisplacementStrengthId = Shader.PropertyToID("_DisplacementStrength");
         #endregion Private Variables
     }
 }
