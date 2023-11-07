@@ -23,6 +23,7 @@ namespace McShaders
         [SerializeField] private float _Radius;
         [SerializeField] private float _Frequency;
         [SerializeField] private float _DisplacementStrength;
+        [SerializeField] private float _SpecularStrength;
         [SerializeField] private Color _GrassColor;
         #endregion Inspector Variables
 
@@ -104,6 +105,7 @@ namespace McShaders
             _ShellTexturingMaterialPropertyBlock.SetVector(_FieldSizeId, _Size);
             _ShellTexturingMaterialPropertyBlock.SetFloat(_DisplacementStrengthId, _DisplacementStrength * Cubic(heightStepSize));
             _ShellTexturingMaterialPropertyBlock.SetInt(_ObjectTypeId, (int)_FurPrefabs.ObjectType);
+            _ShellTexturingMaterialPropertyBlock.SetFloat(_SpecularStrengthId, _SpecularStrength);
             layer.GetComponent<MeshRenderer>().SetPropertyBlock(_ShellTexturingMaterialPropertyBlock);
         }
 
@@ -175,6 +177,7 @@ namespace McShaders
         private static readonly int _FieldSizeId = Shader.PropertyToID("_FieldSize");
         private static readonly int _DisplacementStrengthId = Shader.PropertyToID("_DisplacementStrength");
         private static readonly int _ObjectTypeId = Shader.PropertyToID("_ObjectType");
+        private static readonly int _SpecularStrengthId = Shader.PropertyToID("_SpecularStrength");
         #endregion Private Variables
     }
 }

@@ -363,16 +363,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ShellTextureMaterial: {fileID: 2100000, guid: 5cd93a60ee3b0214d82c022331912812, type: 2}
   _FurryObject: {fileID: 567200923}
-  _FurPrefabs: {fileID: 11400000, guid: 8a2b89d9bdd38db4a99ed1995344e952, type: 2}
+  _FurPrefabs: {fileID: 11400000, guid: bd2e85d2b5906714cb92850b87d5e374, type: 2}
   _LayersObjects: []
   _Size: {x: 1, y: 1, z: 1}
   _LayersSize: 64
-  _Resolution: 128
+  _Resolution: 256
   _LayersSpan: 0.003
   _FieldSize: 1
   _Radius: 0.1
   _Frequency: 15
-  _DisplacementStrength: -0.15
+  _DisplacementStrength: -0.08
+  _SpecularStrength: 32
   _GrassColor: {r: 0.26666668, g: 0.48235294, b: 0, a: 0}
 --- !u!4 &1748050116
 Transform:

@@ -28,6 +28,8 @@ Shader "McShaders/ShellTextureGenerator"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                float3 normal : NORMAL;
+                float3 worldPos : TEXCOORD1;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
@@ -70,6 +72,7 @@ Shader "McShaders/ShellTextureGenerator"
                 UNITY_DEFINE_INSTANCED_PROP(float, _DisplacementStrength)
                 UNITY_DEFINE_INSTANCED_PROP(float3, _FieldSize)
                 UNITY_DEFINE_INSTANCED_PROP(int, _ObjectType)
+                UNITY_DEFINE_INSTANCED_PROP(float, _SpecularStrength)
             UNITY_INSTANCING_BUFFER_END(Props)
 
             v2f vert(appdata v)
@@ -78,6 +81,7 @@ Shader "McShaders/ShellTextureGenerator"
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_TRANSFER_INSTANCE_ID(v, o);
                 v.vertex.xyz *= UNITY_ACCESS_INSTANCED_PROP(Props, _FieldSize);
+                v.normal.xyz *= UNITY_ACCESS_INSTANCED_PROP(Props, _FieldSize);
                 v.vertex.xyz += v.normal * UNITY_ACCESS_INSTANCED_PROP(Props, _LayerHeight);
                 const float2 uv = (v.uv * 2.0f - 1.0f) * UNITY_ACCESS_INSTANCED_PROP(Props, _Resolution);
                 const float2 iuv = floor(uv);
@@ -96,8 +100,21 @@ Shader "McShaders/ShellTextureGenerator"
 
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
+                o.normal = v.normal;
                 o.uv = v.uv;
+                o.worldPos = mul(v.vertex, UNITY_MATRIX_M);
                 return o;
+            }
+
+            float diffuseLight(float3 normal, float3 lightDir)
+            {
+                return saturate(dot(lightDir, normal) * 0.5f + 0.5f);
+            }
+
+            float specularLight(float3 normal, float3 cameraDir, float3 lightDir, float power)
+            {
+                float3 H = normalize(lightDir + cameraDir);
+                return pow(saturate(dot(normal, H)), power);
             }
 
             float4 frag(v2f i) : SV_Target
@@ -113,8 +130,10 @@ Shader "McShaders/ShellTextureGenerator"
                     const float radius = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius);
                     const float addedValue = lerp(0.0f, 1.0f - radius, UNITY_ACCESS_INSTANCED_PROP(Props, _HeightStepSize));
                     const float rnd = random(iuv);
+                    const float diffColor = diffuseLight(i.normal, normalize(_WorldSpaceLightPos0.xyz));
+                    const float specColor = specularLight(i.normal, normalize(i.worldPos.xyz - _WorldSpaceCameraPos.xyz), normalize(_WorldSpaceLightPos0.xyz), UNITY_ACCESS_INSTANCED_PROP(Props, _SpecularStrength));
                     result *= lerp(1.0f, 0.0f, length(fuv - float2(cos(rnd * 2.0f * UNITY_PI), sin(rnd * 2.0f * UNITY_PI))) + radius + addedValue);
-                    col *= addedValue;
+                    col *= addedValue * (diffColor + specColor);
                 }
                 else
                 {
