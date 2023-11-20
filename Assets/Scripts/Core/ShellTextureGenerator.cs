@@ -12,7 +12,6 @@ namespace McShaders
         [Header("Necessary objects")]
         [SerializeField] private GameObject _FurryObject;
         [SerializeField] private FurObject _FurPrefabs;
-        [SerializeField] private List<GameObject> _LayersObjects;
 
         [Header("Fur properties")]
         [SerializeField] private Vector3 _Size;
@@ -25,12 +24,17 @@ namespace McShaders
         [SerializeField] private float _DisplacementStrength;
         [SerializeField] private float _SpecularStrength;
         [SerializeField] private Color _GrassColor;
+        [SerializeField] private float _MovementStrength;
+        [SerializeField] private float _HairMovementStrength;
+        [SerializeField] private float _MovementDamping = 0.98f;
         #endregion Inspector Variables
 
         #region Unity Methods
 
         private void Start()
         {
+            _ObjectBody = _FurryObject.AddComponent<Rigidbody>();
+            _ObjectBody.useGravity = false;
             _CurrentLayerSize = _LayersSize;
             _CurrentFurPrefabs = _FurPrefabs;
             CleanGrassLayers(_LayersSize);
@@ -40,19 +44,21 @@ namespace McShaders
 
         private void OnValidate()
         {
-            UpdateLayersMaterials();
+            //UpdateLayersMaterials();
             UpdateScale();
         }
 
         private void Update()
         {
+            MoveSphere();
+            UpdateLayersMaterials();
+            _ObjectBody.velocity *= _MovementDamping;
             if (CheckIfShouldRecalculateMesh())
             {
                 return;
             }
             CleanGrassLayers(_CurrentLayerSize);
             SpawnGrassLayers(_LayersSize);
-            UpdateLayersMaterials();
             _CurrentLayerSize = _LayersSize;
             _CurrentFurPrefabs = _FurPrefabs;
         }
@@ -106,6 +112,7 @@ namespace McShaders
             _ShellTexturingMaterialPropertyBlock.SetFloat(_DisplacementStrengthId, _DisplacementStrength * Cubic(heightStepSize));
             _ShellTexturingMaterialPropertyBlock.SetInt(_ObjectTypeId, (int)_FurPrefabs.ObjectType);
             _ShellTexturingMaterialPropertyBlock.SetFloat(_SpecularStrengthId, _SpecularStrength);
+            _ShellTexturingMaterialPropertyBlock.SetVector(_VelocityDirectionId, _ObjectBody.velocity * _HairMovementStrength);
             layer.GetComponent<MeshRenderer>().SetPropertyBlock(_ShellTexturingMaterialPropertyBlock);
         }
 
@@ -161,6 +168,26 @@ namespace McShaders
         {
             return value * value * value;
         }
+
+        private void MoveSphere()
+        {
+            if (Input.GetKey(KeyCode.W))
+            {
+                _ObjectBody.AddForce(Vector3.forward * _MovementStrength * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                _ObjectBody.AddForce(-Vector3.forward * _MovementStrength * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                _ObjectBody.AddForce(-Vector3.right * _MovementStrength * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                _ObjectBody.AddForce(Vector3.right * _MovementStrength * Time.deltaTime);
+            }
+        }
         #endregion Private Methods
 
         #region Private Variables
@@ -178,6 +205,10 @@ namespace McShaders
         private static readonly int _DisplacementStrengthId = Shader.PropertyToID("_DisplacementStrength");
         private static readonly int _ObjectTypeId = Shader.PropertyToID("_ObjectType");
         private static readonly int _SpecularStrengthId = Shader.PropertyToID("_SpecularStrength");
+        private static readonly int _VelocityDirectionId = Shader.PropertyToID("_VelocityDirection");
+
+        private List<GameObject> _LayersObjects;
+        private Rigidbody _ObjectBody;
         #endregion Private Variables
     }
 }

@@ -146,13 +146,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 567200923}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0, y: -0.57, z: -8.9}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.6312795, y: 0.28801638, z: -0.34247017}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_Father: {fileID: 1035768143}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
@@ -332,6 +332,39 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 35, y: 0, z: 0}
+--- !u!1 &1035768142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1035768143}
+  m_Layer: 0
+  m_Name: FurryObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1035768143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1035768142}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.6312795, y: -0.8580164, z: -8.557529}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1748050116}
+  - {fileID: 567200924}
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1748050114
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,17 +397,19 @@ MonoBehaviour:
   _ShellTextureMaterial: {fileID: 2100000, guid: 5cd93a60ee3b0214d82c022331912812, type: 2}
   _FurryObject: {fileID: 567200923}
   _FurPrefabs: {fileID: 11400000, guid: bd2e85d2b5906714cb92850b87d5e374, type: 2}
-  _LayersObjects: []
   _Size: {x: 1, y: 1, z: 1}
-  _LayersSize: 64
+  _LayersSize: 32
   _Resolution: 256
-  _LayersSpan: 0.003
+  _LayersSpan: 0.005
   _FieldSize: 1
-  _Radius: 0.1
+  _Radius: -1
   _Frequency: 15
   _DisplacementStrength: -0.08
-  _SpecularStrength: 32
+  _SpecularStrength: 8
   _GrassColor: {r: 0.26666668, g: 0.48235294, b: 0, a: 0}
+  _MovementStrength: 2
+  _HairMovementStrength: 10
+  _MovementDamping: 0.98
 --- !u!4 &1748050116
 Transform:
   m_ObjectHideFlags: 0
@@ -382,11 +417,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1748050114}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.2701132, y: -0.10012859, z: 2.1108866}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.63883376, y: 0.7578878, z: 10.668416}
   m_LocalScale: {x: 5, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_Father: {fileID: 1035768143}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
