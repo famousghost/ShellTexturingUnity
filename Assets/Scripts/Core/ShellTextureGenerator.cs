@@ -1,3 +1,5 @@
+using System;
+
 namespace McShaders
 {
     using System.Collections.Generic;
@@ -51,8 +53,9 @@ namespace McShaders
         private void Update()
         {
             MoveSphere();
+            _OppositeForce = -_ObjectBody.velocity * _MovementDamping;
+            _ObjectBody.AddForce(_OppositeForce);
             UpdateLayersMaterials();
-            _ObjectBody.velocity *= _MovementDamping;
             if (CheckIfShouldRecalculateMesh())
             {
                 return;
@@ -187,6 +190,14 @@ namespace McShaders
             {
                 _ObjectBody.AddForce(Vector3.right * _MovementStrength * Time.deltaTime);
             }
+            if (Input.GetKey(KeyCode.U))
+            {
+                _ObjectBody.AddForce(Vector3.up * _MovementStrength * Time.deltaTime);
+            }
+            if (Input.GetKey(KeyCode.J))
+            {
+                _ObjectBody.AddForce(-Vector3.up * _MovementStrength * Time.deltaTime);
+            }
         }
         #endregion Private Methods
 
@@ -209,6 +220,8 @@ namespace McShaders
 
         private List<GameObject> _LayersObjects;
         private Rigidbody _ObjectBody;
+        private Vector3 _OppositeForce;
+
         #endregion Private Variables
     }
 }

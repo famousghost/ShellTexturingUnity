@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.3069224, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -398,7 +398,7 @@ MonoBehaviour:
   _FurryObject: {fileID: 567200923}
   _FurPrefabs: {fileID: 11400000, guid: bd2e85d2b5906714cb92850b87d5e374, type: 2}
   _Size: {x: 1, y: 1, z: 1}
-  _LayersSize: 32
+  _LayersSize: 64
   _Resolution: 256
   _LayersSpan: 0.005
   _FieldSize: 1
@@ -407,9 +407,9 @@ MonoBehaviour:
   _DisplacementStrength: -0.08
   _SpecularStrength: 8
   _GrassColor: {r: 0.26666668, g: 0.48235294, b: 0, a: 0}
-  _MovementStrength: 2
-  _HairMovementStrength: 10
-  _MovementDamping: 0.98
+  _MovementStrength: 100
+  _HairMovementStrength: 5
+  _MovementDamping: 0.99
 --- !u!4 &1748050116
 Transform:
   m_ObjectHideFlags: 0

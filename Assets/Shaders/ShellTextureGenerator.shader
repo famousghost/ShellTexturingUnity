@@ -106,7 +106,7 @@ Shader "McShaders/ShellTextureGenerator"
                 const int objectType = UNITY_ACCESS_INSTANCED_PROP(Props, _ObjectType);
                 if (objectType == 1)
                 {
-                    const float3 dir = normalize(float3(0.5f, 0.5f, 0.0f) - float3(v.uv.x, v.uv.y, 0.0f));
+                    const float3 dir = normalize(float3(0.5f, 0.5f, 0.0f) - float3(v.uv.x, v.uv.y, 0.0f)) + UNITY_ACCESS_INSTANCED_PROP(Props, _VelocityDirection).xzy;
                     v.vertex.xyz += dir * displacementStrength;
                 }
                 else if (objectType == 2)
