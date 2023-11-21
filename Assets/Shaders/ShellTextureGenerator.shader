@@ -171,10 +171,10 @@ Shader "McShaders/ShellTextureGenerator"
                     const float3 normal = calculateNormal(iuv, UNITY_ACCESS_INSTANCED_PROP(Props, _Frequency));
                     const float3x3 TBN = float3x3(i.tangent, i.bitangent, i.normal);
                     const float3 normalWS = normalize(mul(transpose(TBN), normal));
-                    const float3 norm = normalWS;
-                    const float diffColor = diffuseLight(norm, normalize(_WorldSpaceLightPos0.xyz));
-                    const float specColor = specularLight(norm, normalize(i.worldPos.xyz - _WorldSpaceCameraPos.xyz), normalize(_WorldSpaceLightPos0.xyz), UNITY_ACCESS_INSTANCED_PROP(Props, _SpecularStrength));
-                    result *= lerp(1.0f, 0.0f, length(fuv - float2(cos(rnd * 2.0f * UNITY_PI), sin(rnd * 2.0f * UNITY_PI))) + radius + addedValue);
+                    const float diffColor = diffuseLight(normalWS, normalize(_WorldSpaceLightPos0.xyz));
+                    const float specColor = specularLight(normalWS, normalize(i.worldPos.xyz - _WorldSpaceCameraPos.xyz), normalize(_WorldSpaceLightPos0.xyz), UNITY_ACCESS_INSTANCED_PROP(Props, _SpecularStrength));
+                    const float angle = rnd * 2.0f * UNITY_PI;
+                    result *= lerp(1.0f, 0.0f, length(fuv - float2(cos(angle), sin(angle))) + radius + addedValue);
                     col *= addedValue * (diffColor + specColor);
                     col = lerp(col * 0.2f, col, smoothstep(0.001f, 0.05f, SHADOW_ATTENUATION(i)));
                 }
@@ -253,16 +253,6 @@ Shader "McShaders/ShellTextureGenerator"
             return abcd;
         }
 
-        float3 calculateNormal(in float2 p, in float freq)
-        {
-            float left = noise(p - float2(0.001f, 0.0f), freq);
-            float right = noise(p + float2(0.001f, 0.0f), freq);
-            float top = noise(p + float2(0.0f, 0.001f), freq);
-            float bottom = noise(p - float2(0.0f, 0.001f), freq);
-
-            return normalize(float3(right - left, top - bottom, 1.0f));
-        }
-
         UNITY_INSTANCING_BUFFER_START(Props)
             UNITY_DEFINE_INSTANCED_PROP(float, _Resolution)
             UNITY_DEFINE_INSTANCED_PROP(float, _Frequency)
@@ -302,18 +292,7 @@ Shader "McShaders/ShellTextureGenerator"
 
             o.vertex = UnityObjectToClipPos(v.vertex);
 
-            float3 worldNormal = mul((float3x3)unity_ObjectToWorld, v.normal);
-            float3 worldTangent = mul((float3x3)unity_ObjectToWorld, v.tangent.xyz);
-
-            float3 binormal = cross(v.normal, v.tangent.xyz) * v.tangent.w;
-            float3 worldBinormal = mul((float3x3)unity_ObjectToWorld, binormal);
-
-            o.tangent = normalize(worldTangent);
-            o.normal = normalize(worldNormal);
-            o.bitangent = normalize(worldBinormal);
-
             o.uv = v.uv;
-            o.worldPos = mul(v.vertex, UNITY_MATRIX_M);
 
             return o;
         }
@@ -347,7 +326,8 @@ Shader "McShaders/ShellTextureGenerator"
                 const float radius = UNITY_ACCESS_INSTANCED_PROP(Props, _Radius);
                 const float addedValue = lerp(0.0f, 1.0f - radius, UNITY_ACCESS_INSTANCED_PROP(Props, _HeightStepSize));
                 const float rnd = random(iuv);
-                result *= lerp(1.0f, 0.0f, length(fuv - float2(cos(rnd * 2.0f * UNITY_PI), sin(rnd * 2.0f * UNITY_PI))) + radius + addedValue);
+                const float angle = rnd * 2.0f * UNITY_PI;
+                result *= lerp(1.0f, 0.0f, length(fuv - float2(cos(angle), sin(angle))) + radius + addedValue);
             }
             else
             {
